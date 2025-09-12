@@ -95,11 +95,13 @@ class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 # Skill Views
-class SkillListCreateView(generics.ListCreateAPIView):
+class SkillView(generics.RetrieveUpdateAPIView):
     serializer_class = SkillSerializer
-    queryset = Skill.objects.all()
-
-
-class SkillDetailView(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = SkillSerializer
-    queryset = Skill.objects.all()
+    
+    def get_object(self):
+        skill, created = Skill.objects.get_or_create(
+            defaults={
+                'skills': ''
+            }
+        )
+        return skill

@@ -19,10 +19,10 @@ class PersonalInfo(models.Model):
 
 
 class Experience(models.Model):
-    title = models.CharField(max_length=100)  # job title
-    company = models.CharField(max_length=100)
+    title = models.CharField(max_length=100, blank=True)  # job title
+    company = models.CharField(max_length=100, blank=True)
     location = models.CharField(max_length=100, blank=True)
-    duration = models.CharField(max_length=50)  # e.g., "01/2020 - 12/2022"
+    duration = models.CharField(max_length=50, blank=True)  # e.g., "01/2020 - 12/2022"
     description = models.TextField(blank=True)  # bullet points
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -37,9 +37,9 @@ class Experience(models.Model):
 
 
 class Education(models.Model):
-    degree = models.CharField(max_length=100)
-    institution = models.CharField(max_length=100)
-    education_duration = models.CharField(max_length=50)  # e.g., "09/2018 - 05/2022"
+    degree = models.CharField(max_length=100, blank=True)
+    institution = models.CharField(max_length=100, blank=True)
+    education_duration = models.CharField(max_length=50, blank=True)  # e.g., "09/2018 - 05/2022"
     education_location = models.CharField(max_length=100, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -54,8 +54,8 @@ class Education(models.Model):
 
 
 class Project(models.Model):
-    name = models.CharField(max_length=100)
-    duration = models.CharField(max_length=50)  # e.g., "03/2023 - 05/2023"
+    name = models.CharField(max_length=100, blank=True)
+    duration = models.CharField(max_length=50, blank=True)  # e.g., "03/2023 - 05/2023"
     description = models.TextField(blank=True)  # bullet points
     technologies = models.TextField(blank=True)  # comma-separated technologies
     created_at = models.DateTimeField(auto_now_add=True)

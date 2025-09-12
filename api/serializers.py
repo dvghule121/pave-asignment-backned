@@ -11,6 +11,10 @@ class PersonalInfoSerializer(serializers.ModelSerializer):
 
 
 class ExperienceSerializer(serializers.ModelSerializer):
+    title = serializers.CharField(max_length=100, required=False, allow_blank=True)
+    company = serializers.CharField(max_length=100, required=False, allow_blank=True)
+    duration = serializers.CharField(max_length=50, required=False, allow_blank=True)
+    
     class Meta:
         model = Experience
         fields = ['id', 'title', 'company', 'location', 'duration', 
@@ -19,6 +23,10 @@ class ExperienceSerializer(serializers.ModelSerializer):
 
 
 class EducationSerializer(serializers.ModelSerializer):
+    degree = serializers.CharField(max_length=100, required=False, allow_blank=True)
+    institution = serializers.CharField(max_length=100, required=False, allow_blank=True)
+    education_duration = serializers.CharField(max_length=50, required=False, allow_blank=True)
+    
     class Meta:
         model = Education
         fields = ['id', 'degree', 'institution', 'education_duration', 
@@ -27,6 +35,9 @@ class EducationSerializer(serializers.ModelSerializer):
 
 
 class ProjectSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(max_length=100, required=False, allow_blank=True)
+    duration = serializers.CharField(max_length=50, required=False, allow_blank=True)
+    
     class Meta:
         model = Project
         fields = ['id', 'name', 'duration', 'description', 'technologies', 
@@ -48,3 +59,13 @@ class CompleteResumeSerializer(serializers.Serializer):
     education = EducationSerializer(many=True, read_only=True)
     projects = ProjectSerializer(many=True, read_only=True)
     skills = SkillSerializer(many=True, read_only=True)
+    progress = serializers.SerializerMethodField()
+
+    def get_progress(self, obj):
+        return {
+            'personalInfo': 100 if obj['personal_info'] else 0,
+            'experience': 100 if obj['experiences'].exists() else 0,
+            'education': 100 if obj['education'].exists() else 0,
+            'projects': 100 if obj['projects'].exists() else 0,
+            'skills': 100 if obj['skills'] else 0
+        }
