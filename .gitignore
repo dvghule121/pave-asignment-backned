@@ -1,0 +1,21 @@
+# Byte-code files
+*.pyc
+__pycache__/
+
+# IDE-specific files
+.vscode/
+.idea/
+
+# Database
+db.sqlite3
+
+# Environment variables
+.env
+
+# Django-specific
+media/
+static_root/
+
+# Operating System files
+.DS_Store
+thumbs.db
