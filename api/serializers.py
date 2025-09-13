@@ -80,10 +80,14 @@ class CompleteResumeSerializer(serializers.Serializer):
         'skills': {'type': 'integer'},
     }})
     def get_progress(self, obj):
+        personal_info_progress = 0
+        if obj['personal_info'] and obj['personal_info'].full_name:
+            personal_info_progress = 100
+
         return {
-            'personalInfo': 100 if obj['personal_info'] else 0,
-            'experience': 100 if obj['experiences'].exists() else 0,
-            'education': 100 if obj['education'].exists() else 0,
-            'projects': 100 if obj['projects'].exists() else 0,
+            'personalInfo': personal_info_progress,
+            'experience': 100 if any(exp.title.strip() and exp.company.strip() and exp.location.strip() and exp.duration.strip() and exp.description.strip() for exp in obj['experiences']) else 0,
+            'education': 100 if any(edu.degree.strip() and edu.institution.strip() and edu.education_duration.strip() and edu.education_location.strip() for edu in obj['education']) else 0,
+            'projects': 100 if any(proj.name.strip() and proj.duration.strip() and proj.description.strip() and proj.technologies.strip() for proj in obj['projects']) else 0,
             'skills': 100 if any(skill.skills.strip() for skill in obj['skills']) else 0
         }
