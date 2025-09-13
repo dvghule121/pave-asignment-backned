@@ -23,17 +23,35 @@ This project provides a robust and scalable backend solution built with Django a
    pip install -r requirements.txt
    ```
 
-2. Run migrations:
+3. **Database Setup (PostgreSQL)**:
+   This project uses PostgreSQL as its database. You need to set up your PostgreSQL database and configure the following environment variables:
+
+   - `DB_NAME`: Your PostgreSQL database name
+   - `DB_USER`: Your PostgreSQL username
+   - `DB_PASSWORD`: Your PostgreSQL password
+   - `DB_HOST`: Your PostgreSQL host (e.g., `localhost` or a Docker service name)
+   - `DB_PORT`: Your PostgreSQL port (e.g., `5432`)
+
+   You can create a `.env` file in the `backend` directory with these variables, for example:
+   ```
+   DB_NAME=pave_db
+   DB_USER=pave_user
+   DB_PASSWORD=your_password
+   DB_HOST=localhost
+   DB_PORT=5432
+   ```
+
+4. Run migrations:
    ```bash
    python manage.py migrate
    ```
 
-3. Create superuser (optional):
+5. Create superuser (optional):
    ```bash
    python manage.py createsuperuser
    ```
 
-4. Start development server:
+6. Start development server:
    ```bash
    python manage.py runserver
    ```
@@ -61,6 +79,7 @@ The backend is configured to accept requests from:
 - `http://localhost:5173` (Vite default)
 - `http://127.0.0.1:3000`
 - `http://127.0.0.1:5173`
+- `https://pave-asignment-frontend.vercel.app`
 
 ## Project Structure
 
