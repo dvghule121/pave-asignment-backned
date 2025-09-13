@@ -2,8 +2,8 @@ from django.db import models
 
 
 class PersonalInfo(models.Model):
-    full_name = models.CharField(max_length=100)
-    email = models.EmailField()
+    full_name = models.CharField(max_length=100, blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)
     phone = models.CharField(max_length=20, blank=True)
     location = models.CharField(max_length=100, blank=True)
     professional_title = models.CharField(max_length=100, blank=True)
@@ -71,7 +71,7 @@ class Project(models.Model):
 
 
 class Skill(models.Model):
-    skills = models.TextField()  # comma-separated skills string
+    skills = models.TextField(blank=True)  # comma-separated skills string
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

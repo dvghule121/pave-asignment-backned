@@ -67,5 +67,5 @@ class CompleteResumeSerializer(serializers.Serializer):
             'experience': 100 if obj['experiences'].exists() else 0,
             'education': 100 if obj['education'].exists() else 0,
             'projects': 100 if obj['projects'].exists() else 0,
-            'skills': 100 if obj['skills'] else 0
+            'skills': 100 if any(skill.skills.strip() for skill in obj['skills']) else 0
         }
