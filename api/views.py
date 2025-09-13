@@ -2,14 +2,16 @@ from rest_framework import generics, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+from drf_spectacular.utils import extend_schema
 
 from .models import PersonalInfo, Experience, Education, Project, Skill
 from .serializers import (
     PersonalInfoSerializer, ExperienceSerializer, EducationSerializer,
-    ProjectSerializer, SkillSerializer, CompleteResumeSerializer
+    ProjectSerializer, SkillSerializer, CompleteResumeSerializer, APISchemaSerializer
 )
 
 
+@extend_schema(responses={200: APISchemaSerializer})
 @api_view(['GET'])
 def api_overview(request):
     """
@@ -24,9 +26,11 @@ def api_overview(request):
         'Projects': '/api/projects/',
         'Skills': '/api/skills/',
     }
-    return Response(api_urls)
+    serializer = APISchemaSerializer(instance=api_urls)
+    return Response(serializer.data)
 
 
+@extend_schema(responses={200: CompleteResumeSerializer})
 @api_view(['GET'])
 def complete_resume(request):
     """
@@ -40,7 +44,7 @@ def complete_resume(request):
         'skills': Skill.objects.all()
     }
     
-    serializer = CompleteResumeSerializer(data)
+    serializer = CompleteResumeSerializer(instance=data)
     return Response(serializer.data)
 
 

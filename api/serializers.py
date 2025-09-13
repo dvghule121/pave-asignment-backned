@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from drf_spectacular.utils import extend_schema_field
 from .models import PersonalInfo, Experience, Education, Project, Skill
 
 
@@ -52,6 +53,16 @@ class SkillSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'created_at', 'updated_at']
 
 
+class APISchemaSerializer(serializers.Serializer):
+    api_overview = serializers.CharField(read_only=True)
+    complete_resume = serializers.CharField(read_only=True)
+    personal_info = serializers.CharField(read_only=True)
+    experience = serializers.CharField(read_only=True)
+    education = serializers.CharField(read_only=True)
+    projects = serializers.CharField(read_only=True)
+    skills = serializers.CharField(read_only=True)
+
+
 # Complete resume serializer for getting all user data at once
 class CompleteResumeSerializer(serializers.Serializer):
     personal_info = PersonalInfoSerializer(read_only=True)
@@ -61,6 +72,13 @@ class CompleteResumeSerializer(serializers.Serializer):
     skills = SkillSerializer(many=True, read_only=True)
     progress = serializers.SerializerMethodField()
 
+    @extend_schema_field({'type': 'object', 'properties': {
+        'personalInfo': {'type': 'integer'},
+        'experience': {'type': 'integer'},
+        'education': {'type': 'integer'},
+        'projects': {'type': 'integer'},
+        'skills': {'type': 'integer'},
+    }})
     def get_progress(self, obj):
         return {
             'personalInfo': 100 if obj['personal_info'] else 0,
