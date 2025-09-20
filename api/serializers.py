@@ -1,6 +1,23 @@
 from rest_framework import serializers
 from drf_spectacular.utils import extend_schema_field
 from .models import PersonalInfo, Experience, Education, Project, Skill
+from django.contrib.auth.models import User
+
+
+class UserRegistrationSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'password']
+
+    def create(self, validated_data):
+        user = User.objects.create_user(
+            username=validated_data['username'],
+            email=validated_data['email'],
+            password=validated_data['password']
+        )
+        return user
 
 
 class PersonalInfoSerializer(serializers.ModelSerializer):
@@ -69,7 +86,7 @@ class CompleteResumeSerializer(serializers.Serializer):
     experiences = ExperienceSerializer(many=True, read_only=True)
     education = EducationSerializer(many=True, read_only=True)
     projects = ProjectSerializer(many=True, read_only=True)
-    skills = SkillSerializer(many=True, read_only=True)
+    skills = SkillSerializer(read_only=True)  # Remove many=True since it's OneToOneField
     progress = serializers.SerializerMethodField()
 
     @extend_schema_field({'type': 'object', 'properties': {
@@ -84,10 +101,49 @@ class CompleteResumeSerializer(serializers.Serializer):
         if obj['personal_info'] and obj['personal_info'].full_name:
             personal_info_progress = 100
 
+        # Handle experiences
+        experience_progress = 0
+        if obj['experiences']:
+            experience_progress = 100 if any(
+                exp.title and exp.title.strip() and 
+                exp.company and exp.company.strip() and 
+                exp.location and exp.location.strip() and 
+                exp.duration and exp.duration.strip() and 
+                exp.description and exp.description.strip() 
+                for exp in obj['experiences']
+            ) else 0
+
+        # Handle education
+        education_progress = 0
+        if obj['education']:
+            education_progress = 100 if any(
+                edu.degree and edu.degree.strip() and 
+                edu.institution and edu.institution.strip() and 
+                edu.education_duration and edu.education_duration.strip() and 
+                edu.education_location and edu.education_location.strip() 
+                for edu in obj['education']
+            ) else 0
+
+        # Handle projects
+        projects_progress = 0
+        if obj['projects']:
+            projects_progress = 100 if any(
+                proj.name and proj.name.strip() and 
+                proj.duration and proj.duration.strip() and 
+                proj.description and proj.description.strip() and 
+                proj.technologies and proj.technologies.strip() 
+                for proj in obj['projects']
+            ) else 0
+
+        # Handle skills - obj['skills'] is a single object, not a list
+        skills_progress = 0
+        if obj['skills'] and obj['skills'].skills and obj['skills'].skills.strip():
+            skills_progress = 100
+
         return {
             'personalInfo': personal_info_progress,
-            'experience': 100 if any(exp.title.strip() and exp.company.strip() and exp.location.strip() and exp.duration.strip() and exp.description.strip() for exp in obj['experiences']) else 0,
-            'education': 100 if any(edu.degree.strip() and edu.institution.strip() and edu.education_duration.strip() and edu.education_location.strip() for edu in obj['education']) else 0,
-            'projects': 100 if any(proj.name.strip() and proj.duration.strip() and proj.description.strip() and proj.technologies.strip() for proj in obj['projects']) else 0,
-            'skills': 100 if any(skill.skills.strip() for skill in obj['skills']) else 0
+            'experience': experience_progress,
+            'education': education_progress,
+            'projects': projects_progress,
+            'skills': skills_progress
         }
